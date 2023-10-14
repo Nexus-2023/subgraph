@@ -1,0 +1,54 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Nexus
+    network: goerli
+    source:
+      address: "0xE3C0F0089fb0c38C7Dd2E780B9309419e1dEcd77"
+      abi: Nexus
+      startBlock: 9848818
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - ClusterAdded
+        - ClusterRecharged
+        - OwnerChanged
+        - RollupRegistered
+        - RollupRewardsUpdated
+        - RollupWhitelisted
+        - SSVRecharged
+        - StakingLimitChanged
+        - ValidatorExited
+        - ValidatorShareSubmitted
+        - ValidatorSubmitted
+      abis:
+        - name: Nexus
+          file: ./abis/Nexus.json
+      eventHandlers:
+        - event: ClusterAdded(uint64,uint64[])
+          handler: handleClusterAdded
+        - event: ClusterRecharged(uint64,uint256)
+          handler: handleClusterRecharged
+        - event: OwnerChanged(address,address)
+          handler: handleOwnerChanged
+        - event: RollupRegistered(address,address,uint16,uint64)
+          handler: handleRollupRegistered
+        - event: RollupRewardsUpdated(address,uint256,bool)
+          handler: handleRollupRewardsUpdated
+        - event: RollupWhitelisted(string,address)
+          handler: handleRollupWhitelisted
+        - event: SSVRecharged(address,uint256)
+          handler: handleSSVRecharged
+        - event: StakingLimitChanged(address,uint16,uint16)
+          handler: handleStakingLimitChanged
+        - event: ValidatorExited(address,bytes)
+          handler: handleValidatorExited
+        - event: ValidatorShareSubmitted(bytes,address,uint256)
+          handler: handleValidatorShareSubmitted
+        - event: ValidatorSubmitted(bytes,address)
+          handler: handleValidatorSubmitted
+      file: ./src/nexus.ts

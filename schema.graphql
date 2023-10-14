@@ -1,0 +1,37 @@
+type Cluster @entity(immutable: true) {
+  id: String!
+  clusterId: Int!
+  operatorIds: [BigInt!]! # uint64[]
+  ssvFeePaid: BigInt!
+}
+
+type Constants @entity(immutable: true){
+  id: String!
+  value: String!
+}
+
+type Changes @entity(immutable: true) {
+  id: Bytes!
+  name: String!
+  oldValue: String! # address
+  newValue: String!
+  transactionHash: Bytes!
+}
+
+type Rollup @entity(immutable: true) {
+  id: Bytes! # address
+  name: String
+  bridgeContract: Bytes! #address
+  stakingLimit: Int!
+  clusterId: Int!
+  rewards: BigInt!
+  slashing: BigInt!
+  validatorCount: Int!
+}
+
+type Validators @entity(immutable: true) {
+  id: Bytes!
+  clusterId: Int
+  rollup: String!
+  status: String!
+}

@@ -1,0 +1,8 @@
+{
+  "goerli": {
+    "Nexus": {
+      "address": "0x64BCf45A634D2208fE57ba315ba92536A171F76c",
+      "startBlock": 9848818
+    }
+  }
+}

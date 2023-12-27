@@ -11,7 +11,17 @@
   },
   {
     "inputs": [],
+    "name": "ClusterAlreadyExited",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "ContractAlreadyInitialized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IncorrectStakingLimit",
     "type": "error"
   },
   {
@@ -98,6 +108,38 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "rollup_admin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "NexusFeeChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_nodeOperatorContract",
+        "type": "address"
+      }
+    ],
+    "name": "NodeOperatorContractChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "oldOwner",
         "type": "address"
       },
@@ -109,6 +151,25 @@
       }
     ],
     "name": "OwnerChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "rollup_admin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "operatorCluster",
+        "type": "uint64"
+      }
+    ],
+    "name": "RollupOperatorClusterChanged",
     "type": "event"
   },
   {
@@ -137,6 +198,12 @@
         "internalType": "uint64",
         "name": "operatorCluster",
         "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "nexusFee",
+        "type": "uint256"
       }
     ],
     "name": "RollupRegistered",
@@ -156,15 +223,9 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "slashing",
-        "type": "bool"
       }
     ],
-    "name": "RollupRewardsUpdated",
+    "name": "RollupValidatorSlashed",
     "type": "event"
   },
   {
@@ -217,17 +278,30 @@
       {
         "indexed": false,
         "internalType": "uint16",
-        "name": "oldStakingLimit",
-        "type": "uint16"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint16",
-        "name": "newStakingLimit",
+        "name": "StakingLimit",
         "type": "uint16"
       }
     ],
     "name": "StakingLimitChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "admin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "pubKey",
+        "type": "bytes"
+      }
+    ],
+    "name": "ValidatorExitSubmitted",
     "type": "event"
   },
   {
@@ -294,6 +368,19 @@
     "type": "event"
   },
   {
+    "inputs": [],
+    "name": "NodeOperatorContract",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -315,17 +402,38 @@
   {
     "inputs": [
       {
-        "internalType": "uint64[]",
-        "name": "operatorIds",
-        "type": "uint64[]"
-      },
-      {
         "internalType": "uint64",
-        "name": "clusterId",
+        "name": "operatorCluster",
         "type": "uint64"
       }
     ],
-    "name": "addCluster",
+    "name": "changeCluster",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_execution_fee_address",
+        "type": "address"
+      }
+    ],
+    "name": "changeExecutionFeeAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_new_fee",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeNexusFee",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -477,17 +585,17 @@
   {
     "inputs": [
       {
-        "internalType": "uint64",
-        "name": "clusterId",
-        "type": "uint64"
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
-    "name": "getCluster",
+    "name": "exitingKeys",
     "outputs": [
       {
-        "internalType": "uint64[]",
+        "internalType": "bytes",
         "name": "",
-        "type": "uint64[]"
+        "type": "bytes"
       }
     ],
     "stateMutability": "view",
@@ -611,19 +719,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "rechargeSSV",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "bridgeContract",
         "type": "address"
@@ -632,6 +727,11 @@
         "internalType": "uint64",
         "name": "operatorCluster",
         "type": "uint64"
+      },
+      {
+        "internalType": "uint256",
+        "name": "nexusFee",
+        "type": "uint256"
       },
       {
         "internalType": "uint16",
@@ -666,16 +766,24 @@
       },
       {
         "internalType": "uint64",
-        "name": "validatorCount",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint64",
         "name": "operatorCluster",
         "type": "uint64"
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_nodeOperator",
+        "type": "address"
+      }
+    ],
+    "name": "setNodeOperatorContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -707,36 +815,6 @@
   {
     "inputs": [
       {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "rollupAdmin",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "slashing",
-            "type": "bool"
-          }
-        ],
-        "internalType": "struct INexusInterface.RollupRewardUpdate[]",
-        "name": "rewards",
-        "type": "tuple[]"
-      }
-    ],
-    "name": "updateBridgeRewards",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "newImplemetation",
         "type": "address"
@@ -756,11 +834,84 @@
       },
       {
         "internalType": "bytes[]",
-        "name": "pubkey",
+        "name": "pubkeys",
         "type": "bytes[]"
       }
     ],
     "name": "validatorExit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "rollupAdmin",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "pubkey",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint64[]",
+        "name": "operatorIds",
+        "type": "uint64[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "validatorCount",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "networkFeeIndex",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "index",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ISSVNetworkCore.Cluster",
+        "name": "cluster",
+        "type": "tuple"
+      }
+    ],
+    "name": "validatorExitBalanceTransferred",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "rollupAdmin",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountSlashed",
+        "type": "uint256"
+      }
+    ],
+    "name": "validatorSlashed",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

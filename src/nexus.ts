@@ -1,159 +1,139 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts"
 import {
-  ClusterAdded as ClusterAddedEvent,
   ClusterRecharged as ClusterRechargedEvent,
+  RollupOperatorClusterChanged as RollupOperatorClusterChangedEvent,
   OwnerChanged as OwnerChangedEvent,
   RollupRegistered as RollupRegisteredEvent,
-  RollupRewardsUpdated as RollupRewardsUpdatedEvent,
+  RollupValidatorSlashed as RollupValidatorSlashedEvent,
   RollupWhitelisted as RollupWhitelistedEvent,
   SSVRecharged as SSVRechargedEvent,
   StakingLimitChanged as StakingLimitChangedEvent,
   ValidatorExited as ValidatorExitedEvent,
   ValidatorShareSubmitted as ValidatorShareSubmittedEvent,
-  ValidatorSubmitted as ValidatorSubmittedEvent
+  ValidatorSubmitted as ValidatorubmittedEvent,
+  NexusFeeChanged as NexusFeeChangedEvent,
+  ValidatorExitSubmitted as ValidatorExitSubmittedEvent,
+  NodeOperatorContractChanged as NodeOperatorContractChangedEvent
 } from "../generated/Nexus/Nexus"
 import {
   Cluster,
-  Constants,
-  Changes,
+  Constant,
+  Change,
   Rollup,
-  Validators
+  Validator,
+  NodeOperators
 } from "../generated/schema"
 
-export function handleClusterAdded(event: ClusterAddedEvent): void {
-  let entity = new Cluster(event.params.clusterId.toString())
-  entity.clusterId = event.params.clusterId.toI32()
-  entity.operatorIds = event.params.operatorIds
-  entity.ssvFeePaid = new BigInt(0)
-  entity.save()
-}
-
-export function handleClusterRecharged(event: ClusterRechargedEvent): void {
+export function handleClusterRecharged(event: ClusterRechargedEvent):void {
   let entity = Cluster.load(event.params.clusterId.toString())
-  if (entity != null) {
-    entity.ssvFeePaid = event.params.amount
+  if (entity!=null){
+    entity.ssvFeePaid.plus(event.params.amount)
     entity.save()
   }
 }
 
-export function handleOwnerChanged(event: OwnerChangedEvent): void {
-  let entity = Constants.load("owner")
-  if (entity == null) {
-    entity = new Constants("owner")
-    entity.value = event.params.newOwner.toString()
+export function handleRollupOperatorClusterChanged(event: RollupOperatorClusterChangedEvent):void {
+  let entity = Rollup.load(event.params.rollup_admin)
+  if (entity!=null){
+    entity.clusterId = event.params.operatorCluster
+    entity.save()
   }
-  else {
-    let entity_2 = new Changes(event.transaction.hash)
-    entity_2.oldValue = event.params.oldOwner.toHexString()
-    entity_2.newValue = event.params.newOwner.toHexString()
-    entity_2.save()
-    entity.value = event.params.newOwner.toString()
+}
+
+export function handleOwnerChanged(event: OwnerChangedEvent):void {
+  let entity = Constant.load("NexusOwner")
+  if(entity!=null){
+    entity.value = event.params.newOwner.toHexString()
+  }else{
+    entity = new Constant("NexusOwner")
+    entity.value = event.params.newOwner.toHexString()
   }
   entity.save()
 }
 
-export function handleRollupRegistered(event: RollupRegisteredEvent): void {
+export function handleRollupRegistered(event: RollupRegisteredEvent):void {
   let entity = Rollup.load(event.params.rollupAdmin)
-  if (entity == null) {
-    entity = new Rollup(event.params.rollupAdmin)
-    entity.name = "";
+  if(entity!=null){
+    entity.clusterId = event.params.operatorCluster
+    entity.bridgeContract = event.params.withdrawalAddress
+    entity.nexusFeePercentage = event.params.nexusFee
+    entity.stakingLimit = event.params.stakingLimit
+    entity.save()
   }
-  entity.bridgeContract = event.params.withdrawalAddress
-  entity.clusterId = event.params.operatorCluster.toI32()
-  entity.stakingLimit = event.params.stakingLimit
-  entity.rewards = new BigInt(0)
-  entity.slashing = new BigInt(0)
-  entity.validatorCount = 0
-  entity.save()
 }
 
-export function handleRollupRewardsUpdated(
-  event: RollupRewardsUpdatedEvent
-): void {
-  let entity = new Rollup(event.params.admin)
-  if (event.params.slashing) {
-    entity.slashing.plus(event.params.amount)
+export function handleRollupValidatorSlashed(event: RollupValidatorSlashedEvent):void {
+  let entity = Rollup.load(event.params.admin)
+  if(entity!=null){
+    entity.slashing = event.params.amount
+    entity.save()
   }
-  else {
-    entity.rewards.plus(event.params.amount)
-  }
-  entity.save()
 }
 
-export function handleRollupWhitelisted(event: RollupWhitelistedEvent): void {
+export function handleRollupWhitelisted(event: RollupWhitelistedEvent):void {
   let entity = Rollup.load(event.params.rollupAddress)
-  if (entity == null) {
+  if(entity!=null){
+    entity.name = event.params.name;
+  }else{
     entity = new Rollup(event.params.rollupAddress)
-    entity.name = event.params.name
-    entity.bridgeContract = new Address(0)
-    entity.clusterId = 0
-    entity.stakingLimit = 0
-    entity.rewards = new BigInt(0)
-    entity.slashing = new BigInt(0)
-    entity.validatorCount = 0
+    entity.name = event.params.name;
+    entity.executionRewards = BigInt.fromString("0");
   }
-  else {
-    entity.name = event.params.name
-  }
-
   entity.save()
 }
-
-export function handleSSVRecharged(event: SSVRechargedEvent): void {
-  let entity = Constants.load("Nexus_balance_ssv")
-  if (entity == null) {
-    entity = new Constants("Nexus_balance_ssv")
+export function handleSSVRecharged(event: SSVRechargedEvent):void {
+  let entity = Constant.load("TotalSSVSent")
+  if(entity!=null){
+    entity.value = (BigInt.fromString(entity.value).plus(event.params.amount)).toString()
+  }else{
+    entity = new Constant("TotalSSVSent")
     entity.value = event.params.amount.toString()
   }
-  else {
-    let new_balance = BigInt.fromString(entity.value).plus(event.params.amount)
-    entity.value = new_balance.toString()
-  }
   entity.save()
 }
-
-export function handleStakingLimitChanged(
-  event: StakingLimitChangedEvent
-): void {
+export function handleStakingLimitChanged(event: StakingLimitChangedEvent):void {
   let entity = Rollup.load(event.params.rollupAdmin)
-  if (entity != null) {
-    entity.stakingLimit = event.params.newStakingLimit
-    let entity_2 = new Changes(event.transaction.hash)
-    entity_2.name = "staking_limit_changed"
-    entity_2.oldValue = event.params.oldStakingLimit.toString()
-    entity_2.newValue = event.params.newStakingLimit.toString()
-    entity_2.save()
+  if(entity!=null){
+    entity.stakingLimit = event.params.StakingLimit
     entity.save()
   }
 }
-
-export function handleValidatorExited(event: ValidatorExitedEvent): void {
-  let entity = Validators.load(event.params.pubKey)
-  if (entity != null) {
-    entity.status = "Validator Exited"
-    entity.save()
+export function handleValidatorExited(event: ValidatorExitedEvent):void {
+  let entity = Validator.load(event.params.pubKey)
+  if (entity!=null){
+    entity.status = "ValidatorExited"
+  }
+}
+export function handleValidatorShareSubmitted(event: ValidatorShareSubmittedEvent):void {
+  let entity = Validator.load(event.params.pubKey)
+  if (entity!=null){
+    entity.status = "ValidatorShareSubmitted"
   }
 }
 
-export function handleValidatorShareSubmitted(
-  event: ValidatorShareSubmittedEvent
-): void {
-  let entity = Validators.load(event.params.pubKey)
-  if (entity != null) {
-    entity.status = "Shares Submitted to SSV"
-    entity.save()
-  }
-
-}
-
-export function handleValidatorSubmitted(event: ValidatorSubmittedEvent): void {
-  let entity = new Validators(
-    event.params.pubKey
-  )
+export function handleValidatorSubmitted(event: ValidatorubmittedEvent):void {
+  let entity = new Validator(event.params.pubKey)
   let rollup = Rollup.load(event.params.rolupAdmin)
-  if (rollup != null) {
+  if (rollup!=null){
     entity.clusterId = rollup.clusterId
-    entity.status = "Submitted to Bridge"
+    entity.rollup = event.params.rolupAdmin
+    entity.status = "ValidatorActivated"
+    entity.save()
+  }
+}
+export function handleNodeOperatorContractChanged(event: NodeOperatorContractChangedEvent):void {
+  let entity = Constant.load("NodeOperatorContractAddress")
+  if(entity!=null){
+    entity.value = event.params._nodeOperatorContract.toHexString()
+  }else{
+    entity = new Constant("NodeOperatorContractAddress")
+    entity.value = event.params._nodeOperatorContract.toHexString()
   }
   entity.save()
+}
+export function handleValidatorExitSubmitted(event: ValidatorExitSubmittedEvent):void {
+  let entity = Validator.load(event.params.pubKey)
+  if (entity!=null){
+    entity.status = "ValidatorExiting"
+  }
 }

@@ -1,37 +1,43 @@
-type Cluster @entity(immutable: true) {
+type Cluster @entity(immutable: false) {
   id: String!
-  clusterId: Int!
   operatorIds: [BigInt!]! # uint64[]
   ssvFeePaid: BigInt!
 }
 
-type Constants @entity(immutable: true){
+type Constant @entity(immutable: false){
   id: String!
   value: String!
 }
 
-type Changes @entity(immutable: true) {
+type Change @entity(immutable: true) {
   id: Bytes!
   name: String!
   oldValue: String! # address
   newValue: String!
-  transactionHash: Bytes!
 }
 
-type Rollup @entity(immutable: true) {
+type Rollup @entity(immutable: false) {
   id: Bytes! # address
   name: String
-  bridgeContract: Bytes! #address
-  stakingLimit: Int!
-  clusterId: Int!
-  rewards: BigInt!
-  slashing: BigInt!
-  validatorCount: Int!
+  bridgeContract: Bytes #address
+  stakingLimit: Int
+  clusterId: BigInt
+  nexusFeePercentage: BigInt
+  executionRewards: BigInt!
+  slashing: BigInt
+  validatorCount: BigInt
 }
 
-type Validators @entity(immutable: true) {
+type NodeOperators @entity(immutable: false) {
+  id: String! # public key
+  name: String!
+  ip: String!
+  pubkey: Bytes!
+}
+
+type Validator @entity(immutable: false) {
   id: Bytes!
-  clusterId: Int
-  rollup: String!
+  clusterId: BigInt
+  rollup: Bytes! # address
   status: String!
 }

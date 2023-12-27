@@ -6,7 +6,7 @@ dataSources:
     name: Nexus
     network: goerli
     source:
-      address: "0xE3C0F0089fb0c38C7Dd2E780B9309419e1dEcd77"
+      address: "0x76ad9c555aFd2a2394a907806107e7f3BD5D21F8"
       abi: Nexus
       startBlock: 9848818
     mapping:
@@ -14,36 +14,30 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - ClusterAdded
-        - ClusterRecharged
-        - OwnerChanged
-        - RollupRegistered
-        - RollupRewardsUpdated
-        - RollupWhitelisted
-        - SSVRecharged
-        - StakingLimitChanged
-        - ValidatorExited
-        - ValidatorShareSubmitted
-        - ValidatorSubmitted
+        - Cluster
+        - Constant
+        - Change
+        - Rollup
+        - NodeOperators
       abis:
         - name: Nexus
           file: ./abis/Nexus.json
       eventHandlers:
-        - event: ClusterAdded(uint64,uint64[])
-          handler: handleClusterAdded
         - event: ClusterRecharged(uint64,uint256)
           handler: handleClusterRecharged
+        - event: RollupOperatorClusterChanged(address,uint64)
+          handler: handleRollupOperatorClusterChanged
         - event: OwnerChanged(address,address)
           handler: handleOwnerChanged
-        - event: RollupRegistered(address,address,uint16,uint64)
+        - event: RollupRegistered(address,address,uint16,uint64,uint256)
           handler: handleRollupRegistered
-        - event: RollupRewardsUpdated(address,uint256,bool)
-          handler: handleRollupRewardsUpdated
+        - event: RollupValidatorSlashed(address,uint256)
+          handler: handleRollupValidatorSlashed
         - event: RollupWhitelisted(string,address)
           handler: handleRollupWhitelisted
         - event: SSVRecharged(address,uint256)
           handler: handleSSVRecharged
-        - event: StakingLimitChanged(address,uint16,uint16)
+        - event: StakingLimitChanged(address,uint16)
           handler: handleStakingLimitChanged
         - event: ValidatorExited(address,bytes)
           handler: handleValidatorExited
@@ -51,4 +45,67 @@ dataSources:
           handler: handleValidatorShareSubmitted
         - event: ValidatorSubmitted(bytes,address)
           handler: handleValidatorSubmitted
+        - event: NexusFeeChanged(address,uint256)
+          handler: handleNexusFeeChanged
+        - event: NodeOperatorContractChanged(address)
+          handler: handleNodeOperatorContractChanged
+        - event: ValidatorExitSubmitted(address,bytes)
+          handler: handleValidatorExitSubmitted
       file: ./src/nexus.ts
+  - kind: ethereum
+    name: NodeOperator
+    network: goerli
+    source:
+      address: "0x324a1e6dC550639F7893Dd7EE06Eb7589aDC85de"
+      abi: NodeOperator
+      startBlock: 9848818
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Cluster
+        - Constant
+        - Change
+        - Rollup
+      abis:
+        - name: NodeOperator
+          file: ./abis/NodeOperator.json
+      eventHandlers:
+        - event: ClusterAdded(uint64,uint64[])
+          handler: handleClusterAdded
+        - event: OwnerChanged(address,address)
+          handler: handleOwnerChanged
+        - event: SSVOperatorRegistered(string,indexed uint256,bytes,string)
+          handler: handleSSVOperatorRegistered
+        - event: SSVOperatorUpdated(uint64,string)
+          handler: handleSSVOperatorUpdated
+      file: ./src/nodeOperator.ts
+  - kind: ethereum
+    name: ValidatorExecutionRewards
+    network: goerli
+    source:
+      address: "0x1d87E7863FdE84462470B4b6F3f3b68f7A428D25"
+      abi: ValidatorExecutionRewards
+      startBlock: 9848818
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Constant
+        - Change
+        - Rollup
+      abis:
+        - name: ValidatorExecutionRewards
+          file: ./abis/ValidatorExecutionRewards.json
+      eventHandlers:
+        - event: ExecutionRewardsReceived(uint256)
+          handler: handleExecutionRewardsReceived
+        - event: ChangeRewardBotAddress(address)
+          handler: handleChangeRewardBotAddress
+        - event: ExecutionRewardSent(uint256,address)
+          handler: handleExecutionRewardSent
+        - event: RollupExecutionRewardUpdated(address,uint256)
+          handler: handleRollupExecutionRewardUpdated
+      file: ./src/validatorExecutionRewards.ts

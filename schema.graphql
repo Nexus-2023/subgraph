@@ -32,7 +32,7 @@ type NodeOperators @entity(immutable: false) {
   id: String! # public key
   name: String!
   ip: String!
-  pubkey: Bytes!
+  pubkey: String!
 }
 
 type Validator @entity(immutable: false) {

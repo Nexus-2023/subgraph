@@ -6,9 +6,9 @@ dataSources:
     name: Nexus
     network: goerli
     source:
-      address: "0x76ad9c555aFd2a2394a907806107e7f3BD5D21F8"
+      address: "0x7610dd2DE44aA3c03313b4c2812C482D86F3a9e7"
       abi: Nexus
-      startBlock: 9848818
+      startBlock: 10270000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -56,9 +56,9 @@ dataSources:
     name: NodeOperator
     network: goerli
     source:
-      address: "0x324a1e6dC550639F7893Dd7EE06Eb7589aDC85de"
+      address: "0x39F09e6FEB8163dBD5c46F2f30830bfaf896a12e"
       abi: NodeOperator
-      startBlock: 9848818
+      startBlock: 10270000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -76,7 +76,7 @@ dataSources:
           handler: handleClusterAdded
         - event: OwnerChanged(address,address)
           handler: handleOwnerChanged
-        - event: SSVOperatorRegistered(string,indexed uint256,bytes,string)
+        - event: SSVOperatorRegistered(string,indexed uint256,string,string)
           handler: handleSSVOperatorRegistered
         - event: SSVOperatorUpdated(uint64,string)
           handler: handleSSVOperatorUpdated
@@ -85,9 +85,9 @@ dataSources:
     name: ValidatorExecutionRewards
     network: goerli
     source:
-      address: "0x1d87E7863FdE84462470B4b6F3f3b68f7A428D25"
+      address: "0xc9DD08647269A1855858B6869350C219EB8761A7"
       abi: ValidatorExecutionRewards
-      startBlock: 9848818
+      startBlock: 10270000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

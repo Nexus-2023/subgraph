@@ -51,6 +51,14 @@ export function handleOwnerChanged(event: OwnerChangedEvent):void {
   entity.save()
 }
 
+export function handleNexusFeeChanged(event: NexusFeeChangedEvent):void{
+  let entity = Rollup.load(event.params.rollup_admin)
+  if(entity!=null){
+    entity.nexusFeePercentage = event.params.newFee
+    entity.save()
+  }
+}
+
 export function handleRollupRegistered(event: RollupRegisteredEvent):void {
   let entity = Rollup.load(event.params.rollupAdmin)
   if(entity!=null){

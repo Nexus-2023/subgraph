@@ -89,9 +89,9 @@
       },
       {
         "indexed": false,
-        "internalType": "bytes",
+        "internalType": "string",
         "name": "pubKey",
-        "type": "bytes"
+        "type": "string"
       },
       {
         "indexed": false,
@@ -200,9 +200,9 @@
         "type": "uint64"
       },
       {
-        "internalType": "bytes",
+        "internalType": "string",
         "name": "_pub_key",
-        "type": "bytes"
+        "type": "string"
       },
       {
         "internalType": "string",
@@ -272,6 +272,19 @@
       }
     ],
     "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplemetation",
+        "type": "address"
+      }
+    ],
+    "name": "updateProxy",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
